@@ -1,5 +1,7 @@
 package transport;
 
+import java.time.LocalDate;
+
 public class Car {
     private final String mark;
     private final String model;
@@ -12,8 +14,8 @@ public class Car {
     private String regNumber;
     private final int placesCount;
     private String winterTires;
-//    private final Key key;
-//    private final Insurance insurance;
+    private Key key;
+    private Insurance insurance;
 
     public Car(String mark,
                String model,
@@ -25,7 +27,9 @@ public class Car {
                String bodyTupe,
                String regNumber,
                int placesCount,
-               String winterTires) {
+               String winterTires,
+               Key key,
+               Insurance insurance) {
         this.mark = validOrDefaultCar(mark, "Информация неизвестна.");
         this.model = validOrDefaultCar(model, "Информация неизвестна.");
         this.yearManufacture = yearManufacture >= 0 ? yearManufacture : 2000;
@@ -37,6 +41,8 @@ public class Car {
         setGearBox(gearBox);
         setRegNumber(regNumber);
         setWinterTires(winterTires);
+        this.key = key == null ? new Key() : key;
+        this.insurance = insurance == null ? new Insurance() : insurance;
     }
 
     public boolean isRegNumberValid() {
@@ -111,21 +117,38 @@ public class Car {
     public void setWinterTires(String winterTires) {
         this.winterTires = validOrDefaultCar(winterTires, "Информация неизвестна.");
     }
+
     public String getWinterTires() {
         return winterTires;
+    }
+
+    public Key getKey() {
+        return key;
+    }
+
+    public void setKey(Key key) {
+        this.key = key;
+    }
+
+    public Insurance getInsurance() {
+        return insurance;
+    }
+
+    public void setInsurance(Insurance insurance) {
+        this.insurance = insurance;
     }
 
     public static String validOrDefaultCar(String value, String defaulte) {
         return value == null || value.isEmpty() ? defaulte : value;
     }
-    public void tire (Car car) {
+
+    public void tire(Car car) {
         String tireSummmer = "Летняя";
         String tireWinter = "Зимняя";
-        if(winterTires.contains(tireSummmer) ){
+        if (winterTires.contains(tireSummmer)) {
             this.winterTires = tireWinter;
             System.out.println("Резина заменена на зимнюю.");
-        }
-        else{
+        } else {
             this.winterTires = tireSummmer;
             System.out.println("Резина заменена на летнюю.");
         }
@@ -133,8 +156,7 @@ public class Car {
 
     @Override
     public String toString() {
-        return
-                "Марка -" + mark +
+        return "Марка -" + mark +
                 ",модель -" + model +
                 ",обьем двигателя -" + engineCapacity +
                 ",цвет кузова -" + bodyColour +
@@ -145,7 +167,74 @@ public class Car {
                 ",регистрационный номер -" + regNumber +
                 ",колчисетво сидячих мест -" + placesCount +
                 ",тип шин -" + winterTires +
-                '}';
+                (getKey().isKeyAccess() ? "Безключевой доступ" : "Ключевой доступ") +
+                (getKey().isRemoteStart() ? "Удаленный запуск" : "Обычный запуск") +
+                ", номер страховки: " + getInsurance().getNumber() +
+                ", стоимость страховки: " + getInsurance().getCost() +
+                ", срок действия страховки: " + getInsurance().getExpireDate();
+    }
+
+    public static class Key {
+        private final boolean remoteStart;
+        private final boolean keyAccess;
+
+        public Key(boolean remoteStart, boolean keyAccess) {
+            this.remoteStart = remoteStart;
+            this.keyAccess = keyAccess;
+        }
+
+        public Key() {
+            this(false, false);
+        }
+
+        public boolean isRemoteStart() {
+            return remoteStart;
+        }
+
+        public boolean isKeyAccess() {
+            return keyAccess;
+        }
+    }
+
+    public static class Insurance {
+
+        private final LocalDate expireDate;
+        private final double cost;
+        private final String number;
+
+        public Insurance(LocalDate expireDate, double cost, String number) {
+            this.expireDate = expireDate == null ? LocalDate.now().plusDays(365) : expireDate;
+            this.cost = cost;
+            this.number = number == null ? "123456789" : number;
+        }
+        public Insurance(){
+            this(null,10_000,null);
+        }
+
+
+        public LocalDate getExpireDate() {
+            return expireDate;
+        }
+
+        public double getCost() {
+            return cost;
+        }
+
+        public String getNumber() {
+            return number;
+        }
+
+        public void checkExpireDate() {
+            if (expireDate.isBefore(LocalDate.now()) || expireDate.isEqual(LocalDate.now())) {
+                System.out.println("Нужно срочно ехать оформлять новую страховку!");
+            }
+        }
+
+        public void checkNumber() {
+            if (number.length() != 9) {
+                System.out.println("Номер страховки некорректный!");
+            }
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 package transport;
-
+import java.time.LocalDate;
 public class Main {
     public static void main(String[] args) {
         Car ladaGranta = new Car ("Lada", "Granta", 1.7, "желтого цвета",2015,"сборка в России","Автомат","Седана","xx122xx221",3,"Зимняя");
@@ -16,6 +16,7 @@ public class Main {
         System.out.println(ladaGranta);
         ladaGranta.setRegNumber("в567ро1f2");
         System.out.println(ladaGranta.isRegNumberValid());
+        ladaGranta.setKey(new Car.Key(true,true));
 
 
     }
