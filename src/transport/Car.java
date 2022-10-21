@@ -1,7 +1,5 @@
 package transport;
 
-import java.time.LocalDate;
-
 public class Car {
     private final String mark;
     private final String model;
@@ -10,62 +8,48 @@ public class Car {
     private final int yearManufacture;
     private final String assemblyCountry;
     private String gearBox;
-    private String bodyTupe;
+    private final String bodyTupe;
     private String regNumber;
     private final int placesCount;
-    private boolean winterTires;
-    private final Key key;
-    private final Insurance insurance;
+    private String winterTires;
+//    private final Key key;
+//    private final Insurance insurance;
 
     public Car(String mark,
                String model,
+               double engineCapacity,
+               String bodyColour,
                int yearManufacture,
                String assemblyCountry,
+               String gearBox,
                String bodyTupe,
+               String regNumber,
                int placesCount,
-               double engineCapacity,
-               String bodyColour, String gearBox, String regNumber, boolean tires) {
-        this.mark = validOrDefaultCar(mark, "default");
-        this.model = validOrDefaultCar(model, "default");
+               String winterTires) {
+        this.mark = validOrDefaultCar(mark, "Информация неизвестна.");
+        this.model = validOrDefaultCar(model, "Информация неизвестна.");
         this.yearManufacture = yearManufacture >= 0 ? yearManufacture : 2000;
-        this.assemblyCountry = validOrDefaultCar(assemblyCountry, "default");
-        this.bodyTupe = validOrDefaultCar(bodyTupe, "default");
-        this.placesCount = Math.max(placesCount, 1);
+        this.assemblyCountry = validOrDefaultCar(assemblyCountry, "Информация неизвестна.");
+        this.bodyTupe = validOrDefaultCar(bodyTupe, "Информация неизвестна.");
+        this.placesCount = Math.max(placesCount, 2);
         setEngineCapacity(engineCapacity);
         setBodyColour(bodyColour);
         setGearBox(gearBox);
         setRegNumber(regNumber);
-        setWinterTires(tires);
-    }
-
-    public void setSeasonTires() {
-        int currentMonth = LocalDate.now().getMonthValue();
-        this.winterTires = currentMonth <= 4 || currentMonth >= 11;
+        setWinterTires(winterTires);
     }
 
     public boolean isRegNumberValid() {
-        if (this.regNumber.length() != 9) {
+        //x000xx000
+        if (regNumber.length() != 9) {
             return false;
         }
-        char[] regNumbersChars = this.regNumber.toCharArray();
-        return isNumberLetter(regNumbersChars[0])
-                && isNumber(regNumbersChars[1])
-                && isNumber(regNumbersChars[2])
-                && isNumber(regNumbersChars[3])
-                && isNumberLetter(regNumbersChars[4])
-                && isNumberLetter(regNumbersChars[5])
-                && isNumber(regNumbersChars[6])
-                && isNumber(regNumbersChars[7])
-                && isNumber(regNumbersChars[8]);
-    }
-
-    public boolean isNumber(char symbol) {
-        return Character.isDigit(symbol);
-    }
-
-    public boolean isNumberLetter(char symbol) {
-        String allowedSymbols = "АВЕКМНОРСТУХ";
-        return allowedSymbols.contains("" + symbol);
+        char[] chars = regNumber.toCharArray();
+        if (!Character.isAlphabetic(chars[0]) || !Character.isAlphabetic(chars[4]) || !Character.isAlphabetic(chars[5])) {
+            return false;
+        }
+        return Character.isDigit(chars[1]) && Character.isDigit(chars[2]) && Character.isDigit(chars[3]) &&
+                Character.isDigit(chars[6]) && Character.isDigit(chars[7]) && Character.isDigit(chars[8]);
     }
 
     public String getMark() {
@@ -105,15 +89,11 @@ public class Car {
     }
 
     public void setGearBox(String gearBox) {
-        this.gearBox = validOrDefaultCar(gearBox, "defoult");
+        this.gearBox = validOrDefaultCar(gearBox, "МКПП");
     }
 
     public String getBodyTupe() {
         return bodyTupe;
-    }
-
-    public void setBodyTupe(String bodyTupe) {
-        this.bodyTupe = bodyTupe;
     }
 
     public String getRegNumber() {
@@ -121,78 +101,51 @@ public class Car {
     }
 
     public void setRegNumber(String regNumber) {
-        this.regNumber = validOrDefaultCar(regNumber, "defoult");
+        this.regNumber = validOrDefaultCar(regNumber, "х000хх000");
     }
 
     public int getPlacesCount() {
         return placesCount;
     }
 
-    public boolean isWinterTires() {
-        return winterTires;
+    public void setWinterTires(String winterTires) {
+        this.winterTires = validOrDefaultCar(winterTires, "Информация неизвестна.");
     }
-
-    public void setWinterTires(boolean winterTires) {
-        this.winterTires = winterTires;
+    public String getWinterTires() {
+        return winterTires;
     }
 
     public static String validOrDefaultCar(String value, String defaulte) {
         return value == null || value.isEmpty() ? defaulte : value;
     }
+    public void tire (Car car) {
+        String tireSummmer = "Летняя";
+        String tireWinter = "Зимняя";
+        if(winterTires.contains(tireSummmer) ){
+            this.winterTires = tireWinter;
+            System.out.println("Резина заменена на зимнюю.");
+        }
+        else{
+            this.winterTires = tireSummmer;
+            System.out.println("Резина заменена на летнюю.");
+        }
+    }
 
     @Override
     public String toString() {
-        return "Car{" +
-                "mark='" + mark + '\'' +
-                ", model='" + model + '\'' +
-                ", engineCapacity=" + engineCapacity +
-                ", bodyColour='" + bodyColour + '\'' +
-                ", yearManufacture=" + yearManufacture +
-                ", assemblyCountry='" + assemblyCountry + '\'' +
-                ", gearBox='" + gearBox + '\'' +
-                ", bodyTupe='" + bodyTupe + '\'' +
-                ", regNumber='" + regNumber + '\'' +
-                ", placesCount=" + placesCount +
-                ", winterTires=" + winterTires +
+        return
+                "Марка -" + mark +
+                ",модель -" + model +
+                ",обьем двигателя -" + engineCapacity +
+                ",цвет кузова -" + bodyColour +
+                ",год выпуска -" + yearManufacture +
+                ",страна производства -" + assemblyCountry +
+                ",коробка передач -" + gearBox +
+                ",тип кузова -" + bodyTupe +
+                ",регистрационный номер -" + regNumber +
+                ",колчисетво сидячих мест -" + placesCount +
+                ",тип шин -" + winterTires +
                 '}';
-    }
-
-    public static class Key {
-        private final boolean remoteEngineStart;
-        private final boolean keyLessAccess;
-
-        public Key(boolean remoteEngineStart, boolean keyLessAccess) {
-            this.remoteEngineStart = remoteEngineStart;
-            this.keyLessAccess = keyLessAccess;
-        }
-
-        public boolean isRemoteEngineStart() {
-            return remoteEngineStart;
-        }
-
-        public boolean isKeyLessAccess() {
-            return keyLessAccess;
-        }
-    }
-
-    public static class Insurance {
-        private final LocalDate validUntil;
-        private final float cost;
-        private final String number;
-
-        public Insurance(LocalDate validUntil, float cost, String number) {
-            this.validUntil = validUntil != null ? validUntil : LocalDate.now().plusDays(10);
-            this.cost = Math.max(cost, 1);
-            this.number = validOrDefaultCar(number, "defoult");
-        }
-
-        public boolean isNumberValid() {
-            return number.length() == 9;
-        }
-
-        public boolean isInsuranceValid() {
-            return LocalDate.now().isBefore(this.validUntil);
-        }
     }
 }
 
